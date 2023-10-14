@@ -31,108 +31,31 @@ def parse_regs(filename,state):
         if not str:
             break
         s = str.split()
-        if(s[0] == "RAX"):
-            # print("RAX")
-            # # print(hex(int(s[2],16)))
-            dict["RAX"] = int(s[2],16)
-            state.regs.rax = int(s[2],16)
-        elif(s[0] == "RBX"):
-            # print("RBX")
-            # # print(hex(int(s[2],16)))
-            dict["RBX"] = int(s[2],16)
-            state.regs.rbx = int(s[2],16)
-        elif(s[0] == "RFLAGS"):
-            # print("RFLAGS")
-            # # print(hex(int(s[2],16)))
-            dict["RFLAGS"] = int(s[2],16)
-            state.regs.cc_dep1 = int(s[2],16)
-        elif(s[0] == "RCX"):
-            # print("RCX")
-            # # print(hex(int(s[2],16)))
-            dict["RCX"] = int(s[2],16)
-            state.regs.rcx = int(s[2],16)
-        elif(s[0] == "RDX"):
-            # print("RDX")
-            # # print(hex(int(s[2],16)))
-            dict["RDX"] = int(s[2],16)
-            state.regs.rdx = int(s[2],16)
-        elif(s[0] == "RBP"):
-            # print("RBP")
-            # # print(hex(int(s[2],16)))
-            dict["RBP"] = int(s[2],16)
-            state.regs.rbp = int(s[2],16)
-        elif(s[0] == "RSP"):
-            # print("RSP")
-            # # print(hex(int(s[2],16)))
-            dict["RSP"] = int(s[2],16)
-            state.regs.rsp = int(s[2],16)
-        elif(s[0] == "RSI"):
-            # print("RSI")
-            # # print(hex(int(s[2],16)))
-            dict["RSI"] = int(s[2],16)
-            state.regs.rsi = int(s[2],16)
-        elif(s[0] == "RDI"):
-            # print("RDI")
-            # # print(hex(int(s[2],16)))
-            dict["RDI"] = int(s[2],16)
-            state.regs.rdi = int(s[2],16)
-        elif(s[0] == "R8"):
-            # print("R8")
-            # # print(hex(int(s[2],16)))
-            dict["R8"] = int(s[2],16)
-            state.regs.r8 = int(s[2],16)
-        elif(s[0] == "R9"):
-            # print("R9")
-            # # print(hex(int(s[2],16)))
-            dict["R9"] = int(s[2],16)
-            state.regs.r9 = int(s[2],16)
-        elif(s[0] == "R10"):
-            # print("R10")
-            # # print(hex(int(s[2],16)))
-            dict["R10"] = int(s[2],16)
-            state.regs.r10 = int(s[2],16)
-        elif(s[0] == "R11"):
-            # print("R11")
-            # # print(hex(int(s[2],16)))
-            dict["R11"] = int(s[2],16)
-            state.regs.r11 = int(s[2],16)
-        elif(s[0] == "R12"):
-            # print("R12")
-            # # print(hex(int(s[2],16)))
-            dict["R12"] = int(s[2],16)
-            state.regs.r12 = int(s[2],16)
-        elif(s[0] == "R13"):
-            # print("R13")
-            # # print(hex(int(s[2],16)))
-            dict["R13"] = int(s[2],16)
-            state.regs.r13 = int(s[2],16)
-        elif(s[0] == "R14"):
-            # print("R14")
-            # # print(hex(int(s[2],16)))
-            dict["R14"] = int(s[2],16)
-            state.regs.r14 = int(s[2],16)
-        elif(s[0] == "R15"):
-            # print("R15")
-            # # print(hex(int(s[2],16)))
-            dict["R15"] = int(s[2],16)
-            state.regs.r15 = int(s[2],16)
-        elif(s[0] == "RIP"):
-            # print("RIP")
-            # # print(hex(int(s[2],16)))
-            dict["RIP"] = int(s[2],16)
-            state.regs.rip = int(s[2],16)
-    # print(dict)
-
-    # # print(want_bit(dict["RFLAGS"], 1))
-    # # print(want_bit(dict["RFLAGS"], 3))
-    # # print(want_bit(dict["RFLAGS"], 5))
-    # # print(want_bit(dict["RFLAGS"], 7))
-    # # print(want_bit(dict["RFLAGS"], 8))
-    # # print(want_bit(dict["RFLAGS"], 9))
-    # # print(want_bit(dict["RFLAGS"], 10))
-    # # print(want_bit(dict["RFLAGS"], 11))
-    # # print(want_bit(dict["RFLAGS"], 12))
+        list = ["RAX", "RBX", "RCX", "RDX", "RBP", "RSP", "RSI", "RDI",
+                "R8", "R9", "R10", "R11", "R12", "R13", "R14", "R15", "RIP", "RFLAGS"]
+        if s[0] in list:
+            dict[s[0]] = int(s[2],16)    
     
+    # WHILE후 dict에서 꺼내주기.    
+    state.regs.rax = dict["RAX"]
+    state.regs.rbx = dict["RBX"]
+    state.regs.rcx = dict["RCX"]
+    state.regs.rdx = dict["RDX"]
+    state.regs.rbp = dict["RBP"]
+    state.regs.rsp = dict["RSP"]
+    state.regs.rsi = dict["RSI"]
+    state.regs.rdi = dict["RDI"]
+    state.regs.r8 = dict["R8"]
+    state.regs.r9 = dict["R9"]
+    state.regs.r10 = dict["R10"]
+    state.regs.r11 = dict["R11"]
+    state.regs.r12 = dict["R12"]
+    state.regs.r13 = dict["R13"]
+    state.regs.r14 = dict["R14"]
+    state.regs.r15 = dict["R15"]
+    state.regs.rip = dict["RIP"]
+    state.regs.flags = dict["RFLAGS"]
+
     return dict
 
 def parse_mem(filename, state):
@@ -167,7 +90,6 @@ def parse_mem_minidump(filename, seg_addr, seg_size, state):
             split_str = str.split()
             # print(split_str)
 
-            
             base_addr = split_str[0].split("(")[0]
             if not is_hex(base_addr):
                 continue
@@ -180,4 +102,29 @@ def parse_mem_minidump(filename, seg_addr, seg_size, state):
                 
     # 종료 후 file 삭제.
     os.remove("./tmp_save.txt")
+    print(f"Success memory load [addr: {hex(seg_addr)}, size: {hex(seg_size)}]")
 
+# alias parse_mem_minidump
+def parse_dump(filename, seg_addr, seg_size, state):
+    parse_mem_minidump(filename, seg_addr, seg_size, state)
+
+# for debugging.
+def printAllRegs(state):
+    print(state.regs.rax)
+    print(state.regs.rbx)
+    print(state.regs.rcx)
+    print(state.regs.rdx)
+    print(state.regs.rbp)
+    print(state.regs.rsp)
+    print(state.regs.rsi)
+    print(state.regs.rdi)
+    print(state.regs.r8)
+    print(state.regs.r9)
+    print(state.regs.r10)
+    print(state.regs.r11)
+    print(state.regs.r12)
+    print(state.regs.r13)
+    print(state.regs.r14)
+    print(state.regs.r15)
+    print(state.regs.rip)
+    print(state.regs.rflags)

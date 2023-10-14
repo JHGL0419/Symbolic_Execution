@@ -24,7 +24,7 @@ exe파일 aslr을 꺼뒀고, dll들은 aslr끄려면 권한 수정해야되는�
 - angr_test.py
   - main test code
 - parsing.py
-  - regs.txt, mem.txt parsing하는 모듈.
+  - regs.txt, mem.txt를 parsing하는 모듈.
   - regs.txt, mem.txt는 state바꿀 때마다 수정해주세요.
 
 ## DMP(windows dump file) 분석
@@ -34,6 +34,9 @@ exe파일 aslr을 꺼뒀고, dll들은 aslr끄려면 권한 수정해야되는�
     - 디버거로 실행했을 때는 두개 뜰 수가 있는데 오른쪽 클릭 -> 속성 시 실행 파일과 같은 것
   3. 덤프파일 만들기 클릭
 - minidump
-  - 약간 수정해서 original 파일 말고 이걸로 써주세요.
+  - https://github.com/skelsec/minidump
+  - 약간 수정한 부분이 있어서 original 파일 말고 이걸로 써주세요.
   - minidump 디렉토리로 가서 python(3) ./setup.py install
-  - 실행할 때 minidump.py안되면 minidump로 해보세요. (나는 전자 안됌.)
+  - 실행할 때 minidump.py안되면 minidump로 해보세요. (나는 전자 안됨.)
+  - parsing.py에다 memory복사하는 method 만들어놓았음. 구리긴하지만...
+    - `parse_dump(filename, seg_addr, seg_size, state)`

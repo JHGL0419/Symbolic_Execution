@@ -1,5 +1,5 @@
 import angr
-import parsing
+from parsing import *
 
 """
 DLL 주소는 DLL의 aslr 옵션으로 인하여 booting할 때마다 load되는 base주소가 바뀌기 때문에 계속 세팅해주어야 함.
@@ -19,34 +19,22 @@ print(proj.loader.all_pe_objects)
 entry_state = proj.factory.entry_state()
 # entry_state.mem[0x7ffc084b7398].uint64_t = 0x00007FFC08E7FAA0   # ntdll.dll RtlEnterCriticalSection로 안넘어가서 추가. 부팅할 때마다 바꿔주기.
 
-list_1 = parsing.parse_regs("./regs.txt", entry_state)
-list_2 = parsing.parse_mem("./mem.txt", entry_state)
+list_1 = parse_regs("./regs.txt", entry_state)      # register는 minidump.py에 아직 구현 안된듯.
+list_2 = parse_mem("./mem.txt", entry_state)        # stack인데 밑에 처럼 바꾸는게 나을 듯.
 
-parsing.parse_mem_minidump("./ctype.DMP", 0x140010000, 0x1000,entry_state)
-parsing.parse_mem_minidump("./ctype.DMP", 0x140011000, 0x4000,entry_state)
-parsing.parse_mem_minidump("./ctype.DMP", 0x140015000, 0x1000,entry_state)
-parsing.parse_mem_minidump("./ctype.DMP", 0x140010000, 0x1000,entry_state)
-parsing.parse_mem_minidump("./ctype.DMP", 0x140010000, 0x1000,entry_state)
+# memory load. segment 별로 해줘야 함.
+# main_object
+parse_dump("./ctype.DMP", 0x140010000, 0x1000,entry_state)
+parse_dump("./ctype.DMP", 0x140011000, 0x4000,entry_state)
+parse_dump("./ctype.DMP", 0x140015000, 0x2000,entry_state)
+parse_dump("./ctype.DMP", 0x140017000, 0x3000,entry_state)
+# 0x49000 대략 40초 정도 걸린 듯.
+# parse_dump("./ctype.DMP", 0x14001a000, 0x49000,entry_state) 
 
-
-# print(entry_state.regs.rax)
-# print(entry_state.regs.rbx)
-# print(entry_state.regs.rcx)
-# print(entry_state.regs.rdx)
-# print(entry_state.regs.rbp)
-# print(entry_state.regs.rsp)
-# print(entry_state.regs.rsi)
-# print(entry_state.regs.rdi)
-# print(entry_state.regs.r8)
-# print(entry_state.regs.r9)
-# print(entry_state.regs.r10)
-# print(entry_state.regs.r11)
-# print(entry_state.regs.r12)
-# print(entry_state.regs.r13)
-# print(entry_state.regs.r14)
-# print(entry_state.regs.r15)
-# print(entry_state.regs.rip)
-# print(entry_state.regs.rflags)
+# dll도 위처럼 추가해주면 될 듯.
+"""
+dll 들어갈 공간...
+"""
 
 print("entry_state")
 print(entry_state)
@@ -54,7 +42,6 @@ print(entry_state)
 
 print("Address: 0x140015030")
 print(entry_state.mem[0x140015030].uint64_t)
-# print(entry_state.mem[0x140015030].uint64_t)
 # simgr.explore(find=0x00007FFC0847B07D)   # scanf안에서 무언가 오류. 값 바꿔서 그런거는 아님.
 
 # proj.factory.block(simgr.found[0].addr).pp()
@@ -72,22 +59,4 @@ print(entry_state.mem[0x140015030].uint64_t)
 #     proj.factory.block(found_state.addr).pp()
 # #    print("mem[140015030]:" + str(found_state.mem[0x140015030].uint64_t))
 #     print(found_state.mem[0x140015030].uint64_t)
-#     print(found_state.regs.rax)
-#     print(found_state.regs.rbx)
-#     print(found_state.regs.rcx)
-#     print(found_state.regs.rdx)
-#     print(found_state.regs.rbp)
-#     print(found_state.regs.rsp)
-#     print(found_state.regs.rsi)
-#     print(found_state.regs.rdi)
-#     print(found_state.regs.r8)
-#     print(found_state.regs.r9)
-#     print(found_state.regs.r10)
-#     print(found_state.regs.r11)
-#     print(found_state.regs.r12)
-#     print(found_state.regs.r13)
-#     print(found_state.regs.r14)
-#     print(found_state.regs.r15)
-#     print(found_state.regs.rip)
-#     print(found_state.regs.rflags)
 #     print(found_state)

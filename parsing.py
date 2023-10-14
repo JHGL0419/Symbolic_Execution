@@ -1,5 +1,5 @@
 import angr 
-
+import os
 """
  register구조를 살펴보니
    OF  DF  IF  TF | SF  ZF  0   AF  |  0   PF  0   CF
@@ -14,6 +14,13 @@ def want_bit(i, num):
     
     return i
 """
+
+def is_hex(s):
+    try:
+        int(s, 16)
+        return True
+    except ValueError:
+        return False
     
 def parse_regs(filename,state):
     f = open(filename, "r", encoding="UTF-8")
@@ -141,6 +148,36 @@ def parse_mem(filename, state):
         dict[s[0]] = int(s[1],16)
         # print(int(s[0],16))
         state.mem[int(s[0],16)].uint64_t = int(s[1],16)
-        print(state.mem[int(s[0],16)].uint64_t)
+        # print(state.mem[int(s[0],16)].uint64_t)
     
-    return dict
+    return dict 
+
+def parse_mem_minidump(filename, seg_addr, seg_size, state):
+    cmd_memory = f"minidump -r {seg_addr} -s {seg_size} {filename} >> tmp_save.txt"
+    os.system(cmd_memory)
+    
+    with open("./tmp_save.txt", 'r') as f:
+        while 1:
+            str = f.readline()
+            if not str:
+                break
+            if str == "\n":
+                continue
+
+            split_str = str.split()
+            # print(split_str)
+
+            
+            base_addr = split_str[0].split("(")[0]
+            if not is_hex(base_addr):
+                continue
+
+            for i in range(0, 16):
+                address = int(base_addr,16) + i
+                value = int(split_str[i+1], 16)
+                # print(f"addr: {hex(address)}, value: {hex(value)}", end=" ")
+                state.mem[address].uint64_t = value
+                
+    # 종료 후 file 삭제.
+    os.remove("./tmp_save.txt")
+

@@ -1,16 +1,16 @@
 RAX : 00007FFC084D4D28     <msvcrt.__initenv>
 RBX : 0000000000000008
 RCX : 0000000000000001
-RDX : 00000000009B14B0     &"C:\\Users\\han\\Desktop\\test\\bin\\ctype.exe"
-RBP : 00000000009B14B0     &"C:\\Users\\han\\Desktop\\test\\bin\\ctype.exe"
+RDX : 00000000009914C0     &"C:\\Users\\han\\Desktop\\Symbolic_Execution\\bin\\ctype.exe"
+RBP : 00000000009914C0     &"C:\\Users\\han\\Desktop\\Symbolic_Execution\\bin\\ctype.exe"
 RSP : 00000000005FFEA8
-RSI : 0000000000000028     '('
-RDI : 00000000009B14B8
-R8  : 00000000009B1E60     &"ALLUSERSPROFILE=C:\\ProgramData"
+RSI : 0000000000000036     '6'
+RDI : 00000000009914C8
+R8  : 0000000000991E60     &"ALLUSERSPROFILE=C:\\ProgramData"
 R9  : 00007FFC08F75950     "カカカカカカカカ"
 R10 : 0000000000000000
 R11 : 00000000005FFD08     &"カカカカカカカカ"
-R12 : 00000000009B14F0     &"C:\\Users\\han\\Desktop\\test\\bin\\ctype.exe"
+R12 : 0000000000991500     &"C:\\Users\\han\\Desktop\\Symbolic_Execution\\bin\\ctype.exe"
 R13 : 0000000000000000
 R14 : 0000000000000000
 R15 : 0000000000000000

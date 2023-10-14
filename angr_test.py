@@ -35,6 +35,16 @@ parse_dump("./ctype.DMP", 0x140017000, 0x3000,entry_state)
 """
 dll 들어갈 공간...
 """
+# dll test (mscvrt.dll의 .rdata영역.)
+print("Before")
+print(entry_state.mem[0x7ffc084b7398].uint64_t)
+proj.factory.block(entry_state.solver.eval(entry_state.mem[0x7ffc084b7398].uint64_t.resolved)).pp()
+
+print("After")
+parse_dump("./ctype.DMP", 0x7FFC084B6000, 0x19000, entry_state)
+print(entry_state.mem[0x7ffc084b7398].uint64_t)
+proj.factory.block(entry_state.solver.eval(entry_state.mem[0x7ffc084b7398].uint64_t.resolved)).pp()
+
 
 print("entry_state")
 print(entry_state)

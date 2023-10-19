@@ -36,7 +36,7 @@ exe파일 aslr을 꺼뒀고, dll들은 aslr끄려면 권한 수정해야되는�
   3. 덤프파일 만들기 클릭
 - minidump
   - https://github.com/skelsec/minidump
-  - 약간 수정한 부분이 있어서 original 파일 말고 이걸로 써주세요.
+  - 약간 수정한 부분이 있어서 original 파일 말고 여기 올려놓은 거로 써주세요.
   - minidump 디렉토리로 가서 python(3) ./setup.py install
   - 실행할 때 minidump.py안되면 minidump로 해보세요. (나는 전자 안됨.)
   - parsing.py에다 memory복사하는 method 만들어놓았음. 구리긴하지만...

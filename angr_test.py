@@ -9,7 +9,7 @@ mscvrt.dll의 EnterCriticalSection에서 ntdll.dll의 RtlEnterCriticalSection으
 """
 
 load_options = {"auto_load_libs":False, "force_load_libs":['msvcrt.dll', 'ntdll.dll', 'kernel32.dll', 'kernelbase.dll'],
-                 "lib_opts":{'msvcrt.dll':{'base_addr':0x00007FFC08440000}, 'kernel32.dll':{'base_addr':0x00007FFC08740000}, 'ntdll.dll':{'base_addr':0x00007FFC08E50000}, 'kernelbase.dll':{'base_addr':0x00007FFC06A60000}}}
+                 "lib_opts":{'msvcrt.dll':{'base_addr':0x00007FFC21DC0000}, 'kernel32.dll':{'base_addr':0x00007FFC21880000}, 'ntdll.dll':{'base_addr':0x00007FFC22550000}, 'kernelbase.dll':{'base_addr':0x00007FFC200A0000}}}
 
 proj = angr.Project("./bin/ctype.exe", load_options=load_options)
 
@@ -24,10 +24,9 @@ list_2 = parse_mem("./mem.txt", entry_state)        # stack인데 밑에 처럼 
 
 # memory load. segment 별로 해줘야 함.
 # main_object
-parse_dump("./ctype.DMP", 0x140010000, 0x1000,entry_state)
-parse_dump("./ctype.DMP", 0x140011000, 0x4000,entry_state)
-parse_dump("./ctype.DMP", 0x140015000, 0x2000,entry_state)
-parse_dump("./ctype.DMP", 0x140017000, 0x3000,entry_state)
+parse_dump("./ctype.DMP", 0x140010000, 0x1000, entry_state)  # .data
+parse_dump("./ctype.DMP", 0x140011000, 0x2000, entry_state)  # .rdata
+parse_dump("./ctype.DMP", 0x140015000, 0x2000, entry_state)  # .bss
 # 0x49000 대략 40초 정도 걸린 듯.
 # parse_dump("./ctype.DMP", 0x14001a000, 0x49000,entry_state) 
 
@@ -35,23 +34,21 @@ parse_dump("./ctype.DMP", 0x140017000, 0x3000,entry_state)
 """
 dll 들어갈 공간...
 """
-# dll test (mscvrt.dll의 .rdata영역.)
-print("Before")
-print(entry_state.mem[0x7ffc084b7398].uint64_t)
-proj.factory.block(entry_state.solver.eval(entry_state.mem[0x7ffc084b7398].uint64_t.resolved)).pp()
+print("dll : msvcrt.dll")
+parse_dump("./ctype.DMP", 0x7FFC21E36000, 0x19000, entry_state) # .rdata
+parse_dump("./ctype.DMP", 0x7FFC21E4F000, 0x8000, entry_state) # .data
 
-print("After")
-parse_dump("./ctype.DMP", 0x7FFC084B6000, 0x19000, entry_state)
-print(entry_state.mem[0x7ffc084b7398].uint64_t)
-proj.factory.block(entry_state.solver.eval(entry_state.mem[0x7ffc084b7398].uint64_t.resolved)).pp()
+print("dll : ntdll.dll")
+parse_dump("./ctype.DMP", 0x7FFC2266C000, 0x49000, entry_state)
+parse_dump("./ctype.DMP", 0x7FFC226B5000, 0xC000, entry_state)
 
 
-print("entry_state")
-print(entry_state)
+# print("entry_state")
+# print(entry_state)
 # simgr = proj.factory.simgr(entry_state)
 
-print("Address: 0x140015030")
-print(entry_state.mem[0x140015030].uint64_t)
+# print("Address: 0x140015030")
+# print(entry_state.mem[0x140015030].uint64_t)
 # simgr.explore(find=0x00007FFC0847B07D)   # scanf안에서 무언가 오류. 값 바꿔서 그런거는 아님.
 
 # proj.factory.block(simgr.found[0].addr).pp()

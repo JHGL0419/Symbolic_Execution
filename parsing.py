@@ -1,5 +1,9 @@
 import angr 
 import os
+from minidump.minidumpfile import MinidumpFile
+from minidump.common_structs import hexdump
+
+
 """
  register구조를 살펴보니
    OF  DF  IF  TF | SF  ZF  0   AF  |  0   PF  0   CF
@@ -76,37 +80,45 @@ def parse_mem(filename, state):
     return dict 
 
 def parse_mem_minidump(filename, seg_addr, seg_size, state):
-    cmd_memory = f"minidump -r {seg_addr} -s {seg_size} {filename} >> tmp_save.txt"
-    os.system(cmd_memory)
+    res_list = mem_dump(filename, seg_addr, seg_size)
     
-    with open("./tmp_save.txt", 'r') as f:
-        while 1:
-            str = f.readline()
-            if not str:
-                break
-            if str == "\n":
-                continue
+    for str in res_list:
+        # if str == "\n":
+        #     continue
 
-            split_str = str.split()
-            # print(split_str)
+        split_str = str.split()
+        # print(split_str)
 
-            base_addr = split_str[0].split("(")[0]
-            if not is_hex(base_addr):
-                continue
+        base_addr = split_str[0].split("(")[0]
+        if not is_hex(base_addr):
+            continue
 
-            for i in range(0, 16):
-                address = int(base_addr,16) + i
-                value = int(split_str[i+1], 16)
-                # print(f"addr: {hex(address)}, value: {hex(value)}", end=" ")
-                state.mem[address].uint64_t = value
-                
+        for i in range(0, 16):
+            address = int(base_addr,16) + i
+            value = int(split_str[i+1], 16)
+            # print(f"addr: {hex(address)}, value: {hex(value)}", end=" ")
+            state.mem[address].uint64_t = value
+            
     # 종료 후 file 삭제.
-    os.remove("./tmp_save.txt")
     print(f"Success memory load [addr: {hex(seg_addr)}, size: {hex(seg_size)}]")
 
 # alias parse_mem_minidump
 def parse_dump(filename, seg_addr, seg_size, state):
     parse_mem_minidump(filename, seg_addr, seg_size, state)
+
+
+def mem_dump(filename, seg_addr, seg_size):
+    mf = MinidumpFile.parse(filename)
+    reader = mf.get_reader()
+
+    buff_reader = reader.get_buffered_reader()
+    buff_reader.move(seg_addr)
+    data = buff_reader.peek(seg_size)
+    res = hexdump(data, start=seg_addr)
+    res_list = res.split("\n")
+
+    return res_list
+    
 
 # for debugging.
 def printAllRegs(state):

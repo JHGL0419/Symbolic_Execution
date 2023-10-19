@@ -6,6 +6,7 @@
 - CFF Explorer (이거 주로 사용)
   - https://github.com/cybertechniques/site/blob/master/analysis_tools/cff-explorer/index.md
   - pe파일 수정도 가능해서 좋음. ex) aslr 끄기.
+- Aslr이 위 방법으로도 안꺼지면 https://m.blog.naver.com/techshare/221507922086 (.net의 경우 이 방법으로 해야 하나봄)
 
 ### Debugger
 - x96dbg(x32dbg + x64dbg)
@@ -18,7 +19,7 @@
 ## Binary file(/bin)
 exe파일 aslr을 꺼뒀고, dll들은 aslr끄려면 권한 수정해야되는데 좀 무서워서 일단 그냥 함.
 - ctype.exe 2입력시 success. 아니면 fail.
-  - else 빼먹어서 2입력하면 success fail 둘다 뜨는데 고치기 귀차나...
+  - else 빼먹어서 2입력하면 success fail 둘다 떠버림.
 
 ## Angr test code
 - angr_test.py

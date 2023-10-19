@@ -1,5 +1,6 @@
 import angr 
 import os
+import claripy
 from minidump.minidumpfile import MinidumpFile
 from minidump.common_structs import hexdump
 from minidump.streams.SystemInfoStream import PROCESSOR_ARCHITECTURE
@@ -192,20 +193,22 @@ def reg_dump(filename, state):
     threads = mf.threads.threads    # thread list
     target_thread = None
     # 현재 ip를 가지는 애를 찾기 => state의 ip이용
-    ip = 0x1400013f0
+    
+    s = claripy.Solver()
+
     arch = ""
     # x64
     if mf.sysinfo.ProcessorArchitecture == PROCESSOR_ARCHITECTURE.AMD64:
         arch = "x64"
         for t in threads:
-            if ip == t.ContextObject.Rip:
+            if state.solver.eval(state.ip) == t.ContextObject.Rip:
                 target_thread = t
     
     # x32
     elif mf.sysinfo.ProcessorArchitecture == PROCESSOR_ARCHITECTURE.INTEL:
         arch = "x32"
         for t in threads:
-            if ip == t.ContextObject.Eip:
+            if state.ip == t.ContextObject.Eip:
                 target_thread = t
     
     if target_thread is None:
@@ -301,21 +304,21 @@ def mem_dump(filename, seg_addr, seg_size):
 
 # for debugging.
 def printAllRegs(state):
-    print(state.regs.rax)
-    print(state.regs.rbx)
-    print(state.regs.rcx)
-    print(state.regs.rdx)
-    print(state.regs.rbp)
-    print(state.regs.rsp)
-    print(state.regs.rsi)
-    print(state.regs.rdi)
-    print(state.regs.r8)
-    print(state.regs.r9)
-    print(state.regs.r10)
-    print(state.regs.r11)
-    print(state.regs.r12)
-    print(state.regs.r13)
-    print(state.regs.r14)
-    print(state.regs.r15)
-    print(state.regs.rip)
-    print(state.regs.rflags)
+    print(f"rax : {state.regs.rax}")
+    print(f"rbx : {state.regs.rbx}")
+    print(f"rcx : {state.regs.rcx}")
+    print(f"rdx : {state.regs.rdx}")
+    print(f"rbp : {state.regs.rbp}")
+    print(f"rsp : {state.regs.rsp}")
+    print(f"rsi : {state.regs.rsi}")
+    print(f"rdi : {state.regs.rdi}")
+    print(f"r8 : {state.regs.r8}")
+    print(f"r9 : {state.regs.r9}")
+    print(f"r10 : {state.regs.r10}")
+    print(f"r11 : {state.regs.r11}")
+    print(f"r12 : {state.regs.r12}")
+    print(f"r13 : {state.regs.r13}")
+    print(f"r14 : {state.regs.r14}")
+    print(f"r15 : {state.regs.r15}")
+    print(f"rip : {state.regs.rip}")
+    print(f"flags : {state.regs.flags}")

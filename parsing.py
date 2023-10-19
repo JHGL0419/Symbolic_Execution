@@ -2,7 +2,7 @@ import angr
 import os
 from minidump.minidumpfile import MinidumpFile
 from minidump.common_structs import hexdump
-
+from minidump.streams.SystemInfoStream import PROCESSOR_ARCHITECTURE
 
 """
  register구조를 살펴보니
@@ -181,6 +181,75 @@ def mem_dump(filename, seg_addr, seg_size):
     res_list = res.split("\n")
 
     return res_list
+
+def reg_dump(filename, state):
+    mf = MinidumpFile.parse(filename)
+    threads = mf.threads.threads    # thread list
+    target_thread = None
+    # 현재 ip를 가지는 애를 찾기 => state의 ip이용
+    ip = 0x1400013f0
+    arch = ""
+    # x64
+    if mf.sysinfo.ProcessorArchitecture == PROCESSOR_ARCHITECTURE.AMD64:
+        arch = "x64"
+        for t in threads:
+            if ip == t.ContextObject.Rip:
+                target_thread = t
+    
+    # x32
+    elif mf.sysinfo.ProcessorArchitecture == PROCESSOR_ARCHITECTURE.INTEL:
+        arch = "x32"
+        for t in threads:
+            if ip == t.ContextObject.Eip:
+                target_thread = t
+    
+    if target_thread is None:
+        raise Exception("target_thread is None...")
+    
+    context = target_thread.ContextObject
+    regs = state.regs
+
+    if arch == "x64":
+        regs.rax = context.Rax
+        regs.rbx = context.Rbx
+        regs.rcx = context.Rcx
+        regs.rdx = context.Rdx
+        regs.rsp = context.Rsp
+        regs.rbp = context.Rbp
+        regs.rsi = context.Rsi
+        regs.rdi = context.Rdi
+        regs.r8 = context.R8
+        regs.r9 = context.R9
+        regs.r10 = context.R10
+        regs.r11 = context.R11
+        regs.r12 = context.R12
+        regs.r13 = context.R13
+        regs.r14 = context.R14
+        regs.r15 = context.R15
+        regs.rip = context.Rip
+        regs.flags = context.EFlags
+
+    else:
+        regs.eax = context.Eax
+        regs.ebx = context.Ebx
+        regs.ecx = context.Ecx
+        regs.edx = context.Edx
+        regs.esp = context.Esp
+        regs.ebp = context.Ebp
+        regs.esi = context.Esi
+        regs.edi = context.Edi
+        regs.e8 = context.E8
+        regs.e9 = context.E9
+        regs.e10 = context.E10
+        regs.e11 = context.E11
+        regs.e12 = context.E12
+        regs.e13 = context.E13
+        regs.e14 = context.E14
+        regs.e15 = context.E15
+        regs.eip = context.Eip
+        regs.flags = context.EFlags
+    
+    print("Load regs done.")
     
 
 # for debugging.

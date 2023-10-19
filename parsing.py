@@ -62,6 +62,35 @@ def parse_regs(filename,state):
 
     return dict
 
+def parse_regs_32(filename,state):
+    f = open(filename, "r", encoding="UTF-8")
+    dict = {}
+    
+    while 1:
+        str = f.readline()
+        if not str:
+            break
+        s = str.split()
+        list = ["EAX", "EBX", "ECX", "EDX", "EBP", "ESP", "ESI", "EDI",
+                 "EIP", "EFLAGS"]
+        if s[0] in list:
+            dict[s[0]] = int(s[2],16)    
+    
+    # WHILE후 dict에서 꺼내주기.    
+    state.regs.eax = dict["EAX"]
+    state.regs.ebx = dict["EBX"]
+    state.regs.ecx = dict["ECX"]
+    state.regs.edx = dict["EDX"]
+    state.regs.ebp = dict["EBP"]
+    state.regs.esp = dict["ESP"]
+    state.regs.esi = dict["ESI"]
+    state.regs.edi = dict["EDI"]
+    state.regs.rip = dict["EIP"]
+    state.regs.flags = dict["EFLAGS"]
+
+    return dict
+
+
 def parse_mem(filename, state):
     dict = {}
     f = open(filename, "r", encoding="UTF-8")

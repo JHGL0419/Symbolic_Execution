@@ -53,7 +53,7 @@ def parse_dlls(filename):
     f.close()
     return dll_list, dll_addr
 
-# register값 parsing (x64)
+# register값 parsing (x64) txt로 load
 def parse_regs(filename, state):
     f = open(filename, "r", encoding="UTF-8")
     dict = {}
@@ -91,7 +91,7 @@ def parse_regs(filename, state):
     f.close()
     return dict
 
-# register값 parsing (x32)
+# register값 parsing (x32) txt파일로 load
 def parse_regs_32(filename, state):
     f = open(filename, "r", encoding="UTF-8")
     dict = {}
@@ -141,47 +141,11 @@ def parse_mem_text(filename, state):
 
     return dict 
 
-# .DMP파일로 parsing할 시 사용
-def parse_mem_minidump(filename, seg_addr, seg_size, state):
-    res_list = mem_dump(filename, seg_addr, seg_size)
-    
-    for str in res_list:
-        # if str == "\n":
-        #     continue
+"""
+DMP파일로 load.
+"""
 
-        split_str = str.split()
-        # print(split_str)
-
-        base_addr = split_str[0].split("(")[0]
-        if not is_hex(base_addr):
-            continue
-
-        for i in range(0, 16):
-            address = int(base_addr,16) + i
-            value = int(split_str[i+1], 16)
-            # print(f"addr: {hex(address)}, value: {hex(value)}", end=" ")
-            state.mem[address].uint64_t = value
-            
-    # 종료 후 file 삭제.
-    print(f"Success memory load [addr: {hex(seg_addr)}, size: {hex(seg_size)}]")
-
-# alias parse_mem_minidump
-def parse_dump(filename, seg_addr, seg_size, state):
-    parse_mem_minidump(filename, seg_addr, seg_size, state)
-
-# minudump 사용 위한 함수
-def mem_dump(filename, seg_addr, seg_size):
-    mf = MinidumpFile.parse(filename)
-    reader = mf.get_reader()
-
-    buff_reader = reader.get_buffered_reader()
-    buff_reader.move(seg_addr)
-    data = buff_reader.peek(seg_size)
-    res = hexdump(data, start=seg_addr)
-    res_list = res.split("\n")
-
-    return res_list
-
+# dump파일로 register load
 def reg_dump(filename, state):
     mf = MinidumpFile.parse(filename)
     threads = mf.threads.threads    # thread list
@@ -251,6 +215,48 @@ def reg_dump(filename, state):
     
     print("Load regs done.")
     
+
+# .DMP파일로 parsing할 시 사용
+def parse_mem_minidump(filename, seg_addr, seg_size, state):
+    res_list = mem_dump(filename, seg_addr, seg_size)
+    
+    for str in res_list:
+        # if str == "\n":
+        #     continue
+
+        split_str = str.split()
+        # print(split_str)
+
+        base_addr = split_str[0].split("(")[0]
+        if not is_hex(base_addr):
+            continue
+
+        for i in range(0, 16):
+            address = int(base_addr,16) + i
+            value = int(split_str[i+1], 16)
+            # print(f"addr: {hex(address)}, value: {hex(value)}", end=" ")
+            state.mem[address].uint64_t = value
+            
+    # 종료 후 file 삭제.
+    print(f"Success memory load [addr: {hex(seg_addr)}, size: {hex(seg_size)}]")
+
+# alias parse_mem_minidump
+def parse_dump(filename, seg_addr, seg_size, state):
+    parse_mem_minidump(filename, seg_addr, seg_size, state)
+
+# minudump 사용 위한 함수
+def mem_dump(filename, seg_addr, seg_size):
+    mf = MinidumpFile.parse(filename)
+    reader = mf.get_reader()
+
+    buff_reader = reader.get_buffered_reader()
+    buff_reader.move(seg_addr)
+    data = buff_reader.peek(seg_size)
+    res = hexdump(data, start=seg_addr)
+    res_list = res.split("\n")
+
+    return res_list
+
 
 # for debugging.
 def printAllRegs(state):

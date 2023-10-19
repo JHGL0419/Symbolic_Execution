@@ -19,14 +19,42 @@ def want_bit(i, num):
     return i
 """
 
+# hex값인지 check
 def is_hex(s):
     try:
         int(s, 16)
         return True
     except ValueError:
         return False
-    
-def parse_regs(filename,state):
+
+# dbg에서 가져온 dll에 대한 force_load_libs, lib_opts 값 return
+def parse_dlls(filename):
+    f = open(filename, "r", encoding="UTF-8")
+    dll_list = []
+    dll_addr = {}
+    while 1:
+        str = f.readline()
+        if not str:
+            break
+        s = str.split()
+        if len(s) < 4:
+            break
+
+        if not ".dll" in s[3]:
+            continue
+        
+        base_addr = {"base_addr" : int(s[0], 16)}
+        dll_list.append(s[3])
+        dll_addr[s[3]] = base_addr
+        # print(f"{s[3]} : {s[0]}")
+        print("parse_dlls")
+
+
+    f.close()
+    return dll_list, dll_addr
+
+# register값 parsing (x64)
+def parse_regs(filename, state):
     f = open(filename, "r", encoding="UTF-8")
     dict = {}
     
@@ -60,9 +88,11 @@ def parse_regs(filename,state):
     state.regs.rip = dict["RIP"]
     state.regs.flags = dict["RFLAGS"]
 
+    f.close()
     return dict
 
-def parse_regs_32(filename,state):
+# register값 parsing (x32)
+def parse_regs_32(filename, state):
     f = open(filename, "r", encoding="UTF-8")
     dict = {}
     
@@ -88,10 +118,11 @@ def parse_regs_32(filename,state):
     state.regs.rip = dict["EIP"]
     state.regs.flags = dict["EFLAGS"]
 
+    f.close()
     return dict
 
-
-def parse_mem(filename, state):
+# txt로 parsing할 시 사용
+def parse_mem_text(filename, state):
     dict = {}
     f = open(filename, "r", encoding="UTF-8")
     while 1:
@@ -106,8 +137,11 @@ def parse_mem(filename, state):
         state.mem[int(s[0],16)].uint64_t = int(s[1],16)
         # print(state.mem[int(s[0],16)].uint64_t)
     
+    f.close()
+
     return dict 
 
+# .DMP파일로 parsing할 시 사용
 def parse_mem_minidump(filename, seg_addr, seg_size, state):
     res_list = mem_dump(filename, seg_addr, seg_size)
     
@@ -135,7 +169,7 @@ def parse_mem_minidump(filename, seg_addr, seg_size, state):
 def parse_dump(filename, seg_addr, seg_size, state):
     parse_mem_minidump(filename, seg_addr, seg_size, state)
 
-
+# minudump 사용 위한 함수
 def mem_dump(filename, seg_addr, seg_size):
     mf = MinidumpFile.parse(filename)
     reader = mf.get_reader()

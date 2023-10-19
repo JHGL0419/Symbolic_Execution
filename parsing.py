@@ -26,6 +26,10 @@ def is_hex(s):
         return True
     except ValueError:
         return False
+    
+def mem_info(filename):
+    mf = MinidumpFile.parse(filename)
+    return mf.memory_info.infos
 
 # dbg에서 가져온 dll에 대한 force_load_libs, lib_opts 값 return
 def parse_dlls(filename):
@@ -37,9 +41,7 @@ def parse_dlls(filename):
         if not str:
             break
         s = str.split()
-        if len(s) < 4:
-            break
-
+        
         if not ".dll" in s[3]:
             continue
         
@@ -49,9 +51,48 @@ def parse_dlls(filename):
         # print(f"{s[3]} : {s[0]}")
         print("parse_dlls")
 
-
     f.close()
     return dll_list, dll_addr
+
+# DMP 파일 dll load
+def dump_dll(filename):
+    dll_list = []
+    dll_addr = {}
+
+    mf = MinidumpFile.parse(filename)
+    modules = mf.modules.modules
+
+    for m in modules:
+        dll_name = str(m.name).split("\\")[-1]
+        dll_base = m.baseaddress
+        if ".dll" in dll_name:
+            dll_list.append(dll_name)
+            base_addr = {"base_addr" : dll_base}
+            dll_addr[dll_name] = base_addr
+
+    return dll_list, dll_addr
+        
+
+# load dll's memory
+def dll_memory(filename, dll_name, state):
+    mf = MinidumpFile.parse(filename)
+    modules = mf.modules.modules
+    infos = mf.memory_info.infos
+    target = None
+
+    for m in modules:
+        if str(m.name).split("\\")[-1] == dll_name:
+            target = m
+    if m is None:
+        raise Exception(f"No dll... {dll_name}")
+
+    base = target.baseaddress
+    end = target.endaddress
+    for info in infos:
+        if base <= info.BaseAddress and (info.BaseAddress+info.RegionSize) <= end and info.Protect.name != "PAGE_EXECUTE_READ":
+            parse_dump(filename, info.BaseAddress, info.RegionSize, state)
+        elif (info.BaseAddress+info.RegionSize) > end:
+            break
 
 # register값 parsing (x64) txt로 load
 def parse_regs(filename, state):
